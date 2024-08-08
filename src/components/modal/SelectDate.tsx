@@ -1,7 +1,7 @@
-import { Popover, PopoverContent, PopoverTrigger } from "../../ui/popover";
-import { Calendar } from "../../ui/calendar";
 import { Button } from "@/components/ui/button";
 import { CalendarDaysIcon } from "lucide-react";
+import { Popover, PopoverContent, PopoverTrigger } from "../ui/popover";
+import { Calendar } from "../ui/calendar";
 const SelectDate = () => {
   return (
     <Popover>
