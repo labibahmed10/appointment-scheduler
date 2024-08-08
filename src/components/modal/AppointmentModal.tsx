@@ -2,10 +2,10 @@ import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import SelectDropdown from "../../common/SelectDropdown";
+import SelectDropdown from "../common/SelectDropdown";
 
 import { Textarea } from "@/components/ui/textarea";
-import SelectDate from "../SelectDate";
+import SelectDate from "../common/SelectDate";
 import { selectTimes } from "@/const/constValue";
 
 const AppointmentModal = () => {

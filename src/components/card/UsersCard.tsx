@@ -1,6 +1,6 @@
 import { Card, CardContent } from "../ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
-import AppointmentModal from "../modal/appointment/AppointmentModal";
+import AppointmentModal from "../modal/AppointmentModal";
 
 const UsersCard = () => {
   return (
