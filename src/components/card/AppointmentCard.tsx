@@ -5,7 +5,7 @@ import { Card, CardContent } from "../ui/card";
 const AppointmentCard = () => {
   return (
     <Card>
-      <CardContent>
+      <CardContent className="p-4">
         <div className="flex items-center justify-between mb-4">
           <div>
             <div className="font-bold">Meeting with John Doe</div>
