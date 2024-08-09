@@ -1,14 +1,16 @@
+import { useAuth } from "@/context/AuthContext";
 import React, { ReactNode } from "react";
-import { Navigate } from "react-router-dom";
+import { Navigate, useLocation } from "react-router-dom";
 
 interface PrivateRouteProps {
   children: ReactNode;
 }
 
 const PrivateRoute: React.FC<PrivateRouteProps> = ({ children }) => {
-  const auth = false;
+  const location = useLocation();
+  const { currentUser } = useAuth();
 
-  return auth ? <>{children}</> : <Navigate to="/registration" replace />;
+  return currentUser ? children : <Navigate to="/registration" state={{ from: location }} replace />;
 };
 
 export default PrivateRoute;
