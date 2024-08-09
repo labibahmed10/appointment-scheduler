@@ -10,19 +10,19 @@ export default function Registration() {
           <h1 className="text-3xl font-bold">Welcome to Appointment Scheduler</h1>
           <p className="text-muted-foreground">Sign up or log in to get started.</p>
         </div>
-        <Tabs defaultValue="register">
+        <Tabs defaultValue="login">
           {/* tab-list */}
           <TabsList className="grid grid-cols-2 gap-2">
-            <TabsTrigger value="register">Register</TabsTrigger>
             <TabsTrigger value="login">Login</TabsTrigger>
+            <TabsTrigger value="register">Register</TabsTrigger>
           </TabsList>
 
           {/* tab-content */}
-          <TabsContent value="register">
-            <Register />
-          </TabsContent>
           <TabsContent value="login">
             <Login />
+          </TabsContent>
+          <TabsContent value="register">
+            <Register />
           </TabsContent>
         </Tabs>
       </div>

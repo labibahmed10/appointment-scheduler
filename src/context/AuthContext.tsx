@@ -3,6 +3,13 @@ import { createContext, useContext, useState, useEffect, ReactNode } from "react
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, User, UserCredential } from "firebase/auth";
 import { auth } from "@/firebase/firebase";
 
+interface IAuthContext {
+  currentUser: User | null;
+  register: (userName: string, password: string) => Promise<UserCredential>;
+  login: (userName: string, password: string) => Promise<UserCredential>;
+  logout: () => Promise<void>;
+}
+
 const AuthContext = createContext<any>(null);
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
@@ -24,7 +31,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   //  login
   const login = (userName: string, password: string): Promise<UserCredential> => {
-    return signInWithEmailAndPassword(auth, userName, password);
+    return signInWithEmailAndPassword(auth, userName + "@email.com", password);
   };
 
   //  logout
@@ -32,7 +39,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return signOut(auth);
   };
 
-  const value = {
+  const value: IAuthContext = {
     currentUser,
     register,
     login,
@@ -43,4 +50,4 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 };
 
 // eslint-disable-next-line react-refresh/only-export-components
-export const useAuth = () => useContext(AuthContext);
+export const useAuth = () => useContext<IAuthContext>(AuthContext);
