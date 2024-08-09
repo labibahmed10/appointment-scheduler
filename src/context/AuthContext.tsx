@@ -1,14 +1,6 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import {
-  onAuthStateChanged,
-  signInWithEmailAndPassword,
-  createUserWithEmailAndPassword,
-  signOut,
-  User,
-  UserCredential,
-  updateProfile,
-} from "firebase/auth";
+import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, User, UserCredential } from "firebase/auth";
 import { auth, db } from "@/firebase/firebase";
 import { addDoc, collection } from "firebase/firestore";
 
@@ -37,11 +29,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const register = async (userName: string, password: string): Promise<string | undefined> => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, userName + "@email.com", password);
-      const user = userCredential.user;
-      await updateProfile(user, { displayName: userName });
 
       const userDoc = await addDoc(collection(db, "users"), {
-        id: user.uid,
+        id: userCredential.user.uid,
         name: userName,
       });
 
