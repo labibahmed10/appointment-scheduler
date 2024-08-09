@@ -1,11 +1,20 @@
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
-import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, User, UserCredential } from "firebase/auth";
-import { auth } from "@/firebase/firebase";
+import {
+  onAuthStateChanged,
+  signInWithEmailAndPassword,
+  createUserWithEmailAndPassword,
+  signOut,
+  User,
+  UserCredential,
+  updateProfile,
+} from "firebase/auth";
+import { auth, db } from "@/firebase/firebase";
+import { addDoc, collection } from "firebase/firestore";
 
 interface IAuthContext {
   currentUser: User | null;
-  register: (userName: string, password: string) => Promise<UserCredential>;
+  register: (userName: string, password: string) => Promise<string | undefined>;
   login: (userName: string, password: string) => Promise<UserCredential>;
   logout: () => Promise<void>;
 }
@@ -25,8 +34,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   }, []);
 
   //  sign up or register
-  const register = (userName: string, password: string): Promise<UserCredential> => {
-    return createUserWithEmailAndPassword(auth, userName + "@email.com", password);
+  const register = async (userName: string, password: string): Promise<string | undefined> => {
+    try {
+      const userCredential = await createUserWithEmailAndPassword(auth, userName + "@email.com", password);
+      const user = userCredential.user;
+      await updateProfile(user, { displayName: userName });
+
+      const userDoc = await addDoc(collection(db, "users"), {
+        id: user.uid,
+        name: userName,
+      });
+
+      return userDoc.id;
+    } catch (error) {
+      console.log(error);
+    }
   };
 
   //  login

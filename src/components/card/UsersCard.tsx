@@ -1,20 +1,23 @@
 import { Card, CardContent } from "../ui/card";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import AppointmentModal from "../modal/AppointmentModal";
+import { DocumentData } from "firebase/firestore";
 
-const UsersCard = () => {
+const UsersCard = ({ user }: { user: DocumentData }) => {
+  const avatarFB = user?.name?.slice(0, 2).toLocaleUpperCase();
+
   return (
     <>
       <Card>
-        <CardContent>
+        <CardContent className="p-4">
           <div className="flex items-center gap-4 mb-4">
             <Avatar>
               <AvatarImage src="/placeholder-user.jpg" alt="User Avatar" />
-              <AvatarFallback>SM</AvatarFallback>
+              <AvatarFallback>{avatarFB}</AvatarFallback>
             </Avatar>
             <div>
-              <div className="font-bold">Sarah Myles</div>
-              <div className="text-muted-foreground">@sarahmyles</div>
+              <div className="font-bold capitalize">{user?.name}</div>
+              <div className="text-muted-foreground">@{user?.name?.toLowerCase()}</div>
             </div>
           </div>
 
