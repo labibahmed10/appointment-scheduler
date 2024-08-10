@@ -11,18 +11,31 @@ import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/firebase/firebase";
 import SelectDropdown from "../common/SelectDropdown";
 import { useState } from "react";
+import { useAuth } from "@/context/AuthContext";
 
-const AppointmentModal = () => {
+const AppointmentModal = ({ name }: { name: string }) => {
+  const { currentUser } = useAuth();
+
   const [isOpen, setIsOpen] = useState(false);
-  const { register, handleSubmit, setValue, watch, formState: { errors } } = useForm();
+  const [whomToMakeAppointment, setWhomToMakeAppointment] = useState("");
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    formState: { errors },
+  } = useForm();
 
   const onSubmit = async (data: any) => {
     try {
       const appointmentData = {
         title: data.title,
         description: data.description,
-        startDate: data.date,
-        startTime: data.time,
+        date: new Date(data.date),
+        time: data.time,
+        apntWith: name,
+        person: currentUser?.uid,
+        status: true,
       };
 
       const appointmentsRef = collection(db, "appointments");
@@ -35,10 +48,10 @@ const AppointmentModal = () => {
       console.error("Error creating appointment:", error);
     }
   };
-
+  console.log(whomToMakeAppointment);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild>
+      <DialogTrigger asChild onClick={() => setWhomToMakeAppointment(name)}>
         <Button className="w-full">Schedule Appointment</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">

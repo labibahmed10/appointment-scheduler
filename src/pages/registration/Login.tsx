@@ -10,7 +10,6 @@ const Login = () => {
   const userNameRef = useRef<HTMLInputElement>(null);
   const passwordRef = useRef<HTMLInputElement>(null);
   const [error, setError] = useState("");
-
   const { login } = useAuth();
   const navigate = useNavigate();
 

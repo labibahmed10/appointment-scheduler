@@ -2,13 +2,14 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, User, UserCredential } from "firebase/auth";
 import { auth, db } from "@/firebase/firebase";
-import { addDoc, collection } from "firebase/firestore";
+import { addDoc, collection, DocumentData, getDocs } from "firebase/firestore";
 
 interface IAuthContext {
   currentUser: User | null;
   register: (userName: string, password: string) => Promise<string | undefined>;
   login: (userName: string, password: string) => Promise<UserCredential>;
   logout: () => Promise<void>;
+  allUsers: DocumentData[];
 }
 
 const AuthContext = createContext<any>(null);
@@ -17,6 +18,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
 
+  const [allUsers, setAllUsers] = useState<DocumentData[]>([]);
+
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
       setCurrentUser(user);
@@ -24,6 +27,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     });
     return unsubscribe;
   }, []);
+
+  // finding all users
+  useEffect(() => {
+    async function getAllUsersFromDB() {
+      const allUsersDoc = await getDocs(collection(db, "users"));
+      const allUsers = allUsersDoc.docs.map((doc) => doc.data());
+
+      setAllUsers(allUsers);
+    }
+    getAllUsersFromDB();
+  }, [currentUser?.uid]);
 
   //  sign up or register
   const register = async (userName: string, password: string): Promise<string | undefined> => {
@@ -56,6 +70,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     register,
     login,
     logout,
+    allUsers,
   };
 
   return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;

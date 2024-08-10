@@ -5,9 +5,9 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 interface ISelectDropdown {
   placeholder: string;
   items: string[];
-  register: any;
-  onChange: (value: string) => void;
-  value: string;
+  register?: any;
+  onChange?: (value: string) => void;
+  value?: string;
 }
 
 const SelectDropdown = forwardRef<HTMLSelectElement, ISelectDropdown>(({ placeholder, items, register, onChange, value }, ref) => {

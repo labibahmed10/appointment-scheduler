@@ -1,18 +1,16 @@
 import UsersCard from "@/components/card/UsersCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useEffect, useRef, useState } from "react";
-import { collection, DocumentData, getDocs } from "firebase/firestore";
-import { db } from "@/firebase/firebase";
+import { useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 const AllUsers = () => {
-  const [allUsers, setAllUsers] = useState<DocumentData[]>([]);
   const [searchQuery, setSearchQuery] = useState<string | undefined>("");
-  const { currentUser } = useAuth();
-
   const searchUserRef = useRef<HTMLInputElement>(null);
   const timeOutRef = useRef<NodeJS.Timeout | null>(null);
+
+  const { allUsers, currentUser } = useAuth();
+  const showUsers = allUsers.filter((doc) => doc.id !== currentUser?.uid);
 
   const handleSearchUser = () => {
     const searchedUser = searchUserRef.current?.value.trim().toLowerCase();
@@ -24,17 +22,7 @@ const AllUsers = () => {
     }, 300);
   };
 
-  useEffect(() => {
-    async function getAllUsersFromDB() {
-      const allUsersDoc = await getDocs(collection(db, "users"));
-      const allUsers = allUsersDoc.docs.map((doc) => doc.data()).filter((doc) => doc.id !== currentUser?.uid);
-
-      setAllUsers(allUsers);
-    }
-    getAllUsersFromDB();
-  }, [currentUser?.uid]);
-
-  const filteredUsers = allUsers.filter((user) => user.name.toLowerCase().includes(searchQuery));
+  const filteredUsers = showUsers.filter((user) => user.name.toLowerCase().includes(searchQuery));
 
   return (
     <div>
