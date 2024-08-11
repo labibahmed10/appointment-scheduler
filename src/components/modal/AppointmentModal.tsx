@@ -10,14 +10,15 @@ import { useForm } from "react-hook-form";
 import { addDoc, collection } from "firebase/firestore";
 import { db } from "@/firebase/firebase";
 import SelectDropdown from "../common/SelectDropdown";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 const AppointmentModal = ({ name }: { name: string }) => {
-  const { currentUser } = useAuth();
-
+  const { currentUser, allAppointments, allUsers } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-  const [whomToMakeAppointment, setWhomToMakeAppointment] = useState("");
+
+  const [appointmentTime, setAppointmentTime] = useState(selectTimes);
+
   const {
     register,
     handleSubmit,
@@ -25,6 +26,23 @@ const AppointmentModal = ({ name }: { name: string }) => {
     watch,
     formState: { errors },
   } = useForm();
+
+  useEffect(() => {
+    const dateValue = watch("date");
+    if (!dateValue) return;
+
+    // Collect all booked times for the selected user and date
+    const bookedTimes = allAppointments
+      .filter((appointment) => {
+        const appointmentDate = new Date(appointment.date.toDate()).toDateString();
+        return appointment.apntWith === name && appointmentDate === dateValue.toDateString();
+      })
+      .map((appointment) => appointment.time);
+
+    // Filter available times based on booked times
+    const availableTimes = selectTimes.filter((time) => !bookedTimes.includes(time));
+    setAppointmentTime(availableTimes); // Update the state with available times
+  }, [allAppointments, allUsers, name, watch("date")]);
 
   const onSubmit = async (data: any) => {
     try {
@@ -45,13 +63,12 @@ const AppointmentModal = ({ name }: { name: string }) => {
         setIsOpen(false);
       }
     } catch (error) {
-      console.error("Error creating appointment:", error);
+      console.error(error);
     }
   };
-  console.log(whomToMakeAppointment);
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
-      <DialogTrigger asChild onClick={() => setWhomToMakeAppointment(name)}>
+      <DialogTrigger asChild>
         <Button className="w-full">Schedule Appointment</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-[425px]">
@@ -80,7 +97,7 @@ const AppointmentModal = ({ name }: { name: string }) => {
                 <SelectDropdown
                   register={undefined}
                   placeholder="Select time"
-                  items={selectTimes}
+                  items={appointmentTime}
                   {...register("time", { required: "Time is required" })}
                   onChange={(value) => setValue("time", value)}
                   value={watch("time")}

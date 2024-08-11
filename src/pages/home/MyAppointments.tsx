@@ -1,12 +1,11 @@
 import AppointmentCard from "@/components/card/AppointmentCard";
 import SelectDropdown from "@/components/common/SelectDropdown";
 import { Button } from "@/components/ui/button";
-
 import { timeFrame } from "@/const/constValue";
-import useGetAllAppointments from "@/utils/useGetAllAppointments";
+import { useAuth } from "@/context/AuthContext";
 
 const MyAppointments = () => {
-  const allAppointments = useGetAllAppointments();
+  const { allAppointments } = useAuth();
 
   return (
     <div>

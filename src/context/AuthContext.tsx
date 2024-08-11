@@ -10,6 +10,7 @@ interface IAuthContext {
   login: (userName: string, password: string) => Promise<UserCredential>;
   logout: () => Promise<void>;
   allUsers: DocumentData[];
+  allAppointments: DocumentData[];
 }
 
 const AuthContext = createContext<any>(null);
@@ -17,8 +18,21 @@ const AuthContext = createContext<any>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-
   const [allUsers, setAllUsers] = useState<DocumentData[]>([]);
+  const [allAppointments, setAllAppointments] = useState<DocumentData[]>([]);
+
+  useEffect(() => {
+    const getAppointments = async () => {
+      const appointments = await getDocs(collection(db, "appointments"));
+      setAllAppointments(
+        appointments.docs.map((doc) => {
+          return { ...doc.data(), id: doc.id };
+        })
+      );
+    };
+
+    getAppointments();
+  }, []);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -71,6 +85,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     login,
     logout,
     allUsers,
+    allAppointments,
   };
 
   return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;

@@ -5,7 +5,7 @@ import { DocumentData } from "firebase/firestore";
 
 const UsersCard = ({ user }: { user: DocumentData }) => {
   const avatarFB = user?.name?.slice(0, 2).toLocaleUpperCase();
-  console.log(user);
+
   return (
     <>
       <Card>

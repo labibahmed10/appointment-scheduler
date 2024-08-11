@@ -5,8 +5,6 @@ import { format } from "date-fns";
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 const AppointmentCard = ({ data }: any) => {
-  console.log(data);
-
   return (
     <Card>
       <CardContent className="p-4">
