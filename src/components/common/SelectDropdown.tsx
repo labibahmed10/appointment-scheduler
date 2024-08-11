@@ -8,6 +8,7 @@ interface ISelectDropdown {
   register?: any;
   onChange?: (value: string) => void;
   value?: string;
+  // handleShortAppointments?: (value: string) => void;
 }
 
 const SelectDropdown = forwardRef<HTMLSelectElement, ISelectDropdown>(({ placeholder, items, register, onChange, value }, ref) => {

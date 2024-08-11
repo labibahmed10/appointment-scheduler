@@ -46,10 +46,13 @@ const AppointmentModal = ({ name }: { name: string }) => {
 
   const onSubmit = async (data: any) => {
     try {
+      const dateWithTime = `${new Date(data?.date)?.toLocaleDateString()} ${data?.time}`;
+      const date = new Date(dateWithTime);
+
       const appointmentData = {
         title: data.title,
         description: data.description,
-        date: new Date(data.date),
+        date: date,
         time: data.time,
         apntWith: name,
         person: currentUser?.uid,
