@@ -20,16 +20,6 @@ const AuthContext = createContext<any>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [allAppointments, setAllAppointments] = useState<DocumentData[]>([]);
-
-  // finding all users
-  const queryofAppointments = async () => {
-    const appointmentRef = collection(db, "users");
-    const queryies = query(appointmentRef);
-    const querySnap = await getDocs(queryies);
-    return querySnap;
-  };
-  const { data: allUsers } = useQuery({ queryKey: ["users"], queryFn: queryofAppointments });
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -39,29 +29,23 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return unsubscribe;
   }, []);
 
-  // useEffect(() => {
-  //   async function getAllUsersFromDB() {
-  //     const allUsersDoc = await getDocs(collection(db, "users"));
-  //     const allUsers = allUsersDoc.docs.map((doc) => doc.data());
-
-  //     setAllUsers(allUsers);
-  //   }
-  //   getAllUsersFromDB();
-  // }, [currentUser?.uid]);
+  // finding all users
+  const queryofUsers = async () => {
+    const usersRef = collection(db, "users");
+    const queries = query(usersRef);
+    const querySnap = await getDocs(queries);
+    return querySnap?.docs.map((doc) => doc.data());
+  };
+  const { data: allUsers } = useQuery({ queryKey: ["users"], queryFn: queryofUsers });
 
   // finding all appointments
-  useEffect(() => {
-    const getAppointments = async () => {
-      const appointments = await getDocs(collection(db, "appointments"));
-      setAllAppointments(
-        appointments.docs.map((doc) => {
-          return { ...doc.data(), id: doc.id };
-        })
-      );
-    };
-
-    getAppointments();
-  }, []);
+  const queryOfAppointments = async () => {
+    const appointmentRef = collection(db, "appointments");
+    const queries = query(appointmentRef);
+    const querySnap = await getDocs(queries);
+    return querySnap?.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
+  };
+  const { data: allAppointments } = useQuery({ queryKey: ["appointments"], queryFn: queryOfAppointments });
 
   //  sign up or register
   const register = async (userName: string, password: string): Promise<string | undefined> => {
@@ -97,8 +81,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     register,
     login,
     logout,
-    allUsers: allUsers?.docs.map((doc) => doc.data()),
-    allAppointments,
+    allUsers: allUsers as DocumentData[],
+    allAppointments: allAppointments as DocumentData[],
     loggedInUser,
   };
 

@@ -13,8 +13,6 @@ const AllUsers = () => {
   const [filteredUsers, setFilteredUsers] = useState<DocumentData[]>([]);
   let showUsers;
 
-  console.log(allUsers);
-
   useEffect(() => {
     const showUsers = allUsers?.filter((doc) => doc.id !== currentUser?.uid);
     setFilteredUsers(showUsers);

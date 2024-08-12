@@ -51,7 +51,7 @@ const MyAppointments = () => {
     setShortAppointments(result);
   };
 
-  if (shortAppointments.length > 0) {
+  if (shortAppointments?.length > 0) {
     showAllAppointments = (
       <div className="grid sm:grid-cols-2 gap-4">
         {shortAppointments.map((data) => (
