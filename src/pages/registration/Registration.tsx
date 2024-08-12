@@ -8,7 +8,7 @@ export default function Registration() {
       <div className="grid gap-8 max-w-md w-full px-4">
         <div className="space-y-2 text-center">
           <h1 className="text-3xl font-bold">Welcome to Appointment Scheduler</h1>
-          <p className="text-muted-foreground">Sign up or log in to get started.</p>
+          <p className="text-muted-foreground">Sign up or Log in to get started.</p>
         </div>
         <Tabs defaultValue="login">
           {/* tab-list */}
