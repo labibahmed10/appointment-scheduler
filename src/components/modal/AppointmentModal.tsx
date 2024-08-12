@@ -32,11 +32,11 @@ const AppointmentModal = ({ name }: { name: string }) => {
 
     // Collect all booked times for the selected user and date
     const bookedTimes = allAppointments
-      .filter((appointment) => {
+      ?.filter((appointment) => {
         const appointmentDate = new Date(appointment.date.toDate()).toDateString();
         return appointment.appointmentWith === name && appointmentDate === dateValue.toDateString();
       })
-      .map((appointment) => appointment.time);
+      ?.map((appointment) => appointment.time);
 
     // Filter available times based on booked times
     const availableTimes = selectTimes.filter((time) => !bookedTimes.includes(time));

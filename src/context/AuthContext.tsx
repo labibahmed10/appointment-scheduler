@@ -2,7 +2,8 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, User, UserCredential } from "firebase/auth";
 import { auth, db } from "@/firebase/firebase";
-import { addDoc, collection, DocumentData, getDocs } from "firebase/firestore";
+import { addDoc, collection, DocumentData, getDocs, query } from "firebase/firestore";
+import { useQuery } from "@tanstack/react-query";
 
 interface IAuthContext {
   currentUser: User | null;
@@ -19,9 +20,36 @@ const AuthContext = createContext<any>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
-  const [allUsers, setAllUsers] = useState<DocumentData[]>([]);
   const [allAppointments, setAllAppointments] = useState<DocumentData[]>([]);
 
+  // finding all users
+  const queryofAppointments = async () => {
+    const appointmentRef = collection(db, "users");
+    const queryies = query(appointmentRef);
+    const querySnap = await getDocs(queryies);
+    return querySnap;
+  };
+  const { data: allUsers } = useQuery({ queryKey: ["users"], queryFn: queryofAppointments });
+
+  useEffect(() => {
+    const unsubscribe = onAuthStateChanged(auth, (user) => {
+      setCurrentUser(user);
+      setLoading(false);
+    });
+    return unsubscribe;
+  }, []);
+
+  // useEffect(() => {
+  //   async function getAllUsersFromDB() {
+  //     const allUsersDoc = await getDocs(collection(db, "users"));
+  //     const allUsers = allUsersDoc.docs.map((doc) => doc.data());
+
+  //     setAllUsers(allUsers);
+  //   }
+  //   getAllUsersFromDB();
+  // }, [currentUser?.uid]);
+
+  // finding all appointments
   useEffect(() => {
     const getAppointments = async () => {
       const appointments = await getDocs(collection(db, "appointments"));
@@ -34,25 +62,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
     getAppointments();
   }, []);
-
-  useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setCurrentUser(user);
-      setLoading(false);
-    });
-    return unsubscribe;
-  }, []);
-
-  // finding all users
-  useEffect(() => {
-    async function getAllUsersFromDB() {
-      const allUsersDoc = await getDocs(collection(db, "users"));
-      const allUsers = allUsersDoc.docs.map((doc) => doc.data());
-
-      setAllUsers(allUsers);
-    }
-    getAllUsersFromDB();
-  }, [currentUser?.uid]);
 
   //  sign up or register
   const register = async (userName: string, password: string): Promise<string | undefined> => {
@@ -80,6 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return signOut(auth);
   };
 
+  // logged in user
   const loggedInUser = currentUser?.email?.split("@email.com")[0];
 
   const value: IAuthContext = {
@@ -87,7 +97,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     register,
     login,
     logout,
-    allUsers,
+    allUsers: allUsers?.docs.map((doc) => doc.data()),
     allAppointments,
     loggedInUser,
   };

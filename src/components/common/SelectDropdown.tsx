@@ -12,8 +12,8 @@ interface ISelectDropdown {
 
 const SelectDropdown = forwardRef<HTMLSelectElement, ISelectDropdown>(({ placeholder, items, register, onChange, value }, ref) => {
   return (
-    <Select className="w-full " ref={ref} value={value} onValueChange={onChange} {...register}>
-      <SelectTrigger>
+    <Select ref={ref} value={value} onValueChange={onChange} {...register}>
+      <SelectTrigger className="w-40 sm:w-44">
         <SelectValue placeholder={placeholder} />
       </SelectTrigger>
       <SelectContent>

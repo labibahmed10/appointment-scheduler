@@ -10,15 +10,19 @@ const AllUsers = () => {
   const searchUserRef = useRef<HTMLInputElement>(null);
   const timeOutRef = useRef<NodeJS.Timeout | null>(null);
   const { allUsers, currentUser } = useAuth();
-  const [filteredUsers, setFilteredUsers] = useState<DocumentData[] | undefined>([]);
+  const [filteredUsers, setFilteredUsers] = useState<DocumentData[]>([]);
+  let showUsers;
+
+  console.log(allUsers);
 
   useEffect(() => {
-    const showUsers = allUsers.filter((doc) => doc.id !== currentUser?.uid);
+    const showUsers = allUsers?.filter((doc) => doc.id !== currentUser?.uid);
     setFilteredUsers(showUsers);
   }, [allUsers, currentUser?.uid]);
 
   const handleSearchUser = () => {
     const searchedUser = searchUserRef.current?.value.trim().toLowerCase();
+
     if (timeOutRef.current) {
       clearTimeout(timeOutRef.current);
     }
@@ -28,9 +32,25 @@ const AllUsers = () => {
   };
 
   const showFilteredUser = () => {
-    const filteredUsers = allUsers.filter((doc) => doc.id !== currentUser?.uid).filter((user) => user.name.toLowerCase().includes(searchQuery));
+    const filteredUsers = allUsers?.filter((doc) => doc.id !== currentUser?.uid)?.filter((user) => user.name.toLowerCase().includes(searchQuery));
     setFilteredUsers(filteredUsers);
   };
+
+  if (filteredUsers?.length > 0) {
+    showUsers = (
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+        {filteredUsers?.map((doc) => (
+          <UsersCard user={doc} key={doc.id} />
+        ))}
+      </div>
+    );
+  } else {
+    showUsers = (
+      <div>
+        <p className="text-2xl font-semibold font-mono text-indigo-800">No Users are Available</p>
+      </div>
+    );
+  }
 
   return (
     <div>
@@ -40,11 +60,9 @@ const AllUsers = () => {
           <Input ref={searchUserRef} onChange={handleSearchUser} placeholder="Search users..." className="flex-1" />
           <Button onClick={showFilteredUser}>Search</Button>
         </div>
-        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
-          {filteredUsers?.map((doc) => (
-            <UsersCard user={doc} key={doc.id} />
-          ))}
-        </div>
+
+        {/* all users are rendered here */}
+        {showUsers}
       </div>
     </div>
   );

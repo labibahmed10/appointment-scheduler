@@ -47,20 +47,11 @@ const AppointmentCard = ({ data }: DocumentData) => {
         </div>
 
         <CardFooter className="flex justify-end gap-2 p-0">
-          {/* <div className="flex gap-1">
-            <MicIcon className="w-5 h-5 " />
-            <span className="">Audio message attached</span>
-          </div> */}
-
           <div className="flex items-center gap-2">
             <Button variant="destructive" size="sm" className="bg-red-600 " onClick={() => cancelAMeeeting(data?.id)}>
               Decline
             </Button>
-            {rescheduleMeeting ? (
-              <Button size="sm" variant="default" className="bg-sky-600 hover:bg-sky-700" disabled={data?.isAccepted}>
-                Reschedule
-              </Button>
-            ) : (
+            {!rescheduleMeeting && (
               <Button
                 disabled={data?.isAccepted}
                 size="sm"
