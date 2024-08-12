@@ -11,6 +11,7 @@ interface IAuthContext {
   logout: () => Promise<void>;
   allUsers: DocumentData[];
   allAppointments: DocumentData[];
+  loggedInUser: string | undefined;
 }
 
 const AuthContext = createContext<any>(null);
@@ -79,6 +80,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return signOut(auth);
   };
 
+  const loggedInUser = currentUser?.email?.split("@email.com")[0];
+
   const value: IAuthContext = {
     currentUser,
     register,
@@ -86,6 +89,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     logout,
     allUsers,
     allAppointments,
+    loggedInUser,
   };
 
   return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;

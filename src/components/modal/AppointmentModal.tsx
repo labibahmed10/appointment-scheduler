@@ -14,9 +14,8 @@ import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 
 const AppointmentModal = ({ name }: { name: string }) => {
-  const { currentUser, allAppointments, allUsers } = useAuth();
+  const { loggedInUser, allAppointments, allUsers } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
-
   const [appointmentTime, setAppointmentTime] = useState(selectTimes);
 
   const {
@@ -35,7 +34,7 @@ const AppointmentModal = ({ name }: { name: string }) => {
     const bookedTimes = allAppointments
       .filter((appointment) => {
         const appointmentDate = new Date(appointment.date.toDate()).toDateString();
-        return appointment.apntWith === name && appointmentDate === dateValue.toDateString();
+        return appointment.appointmentWith === name && appointmentDate === dateValue.toDateString();
       })
       .map((appointment) => appointment.time);
 
@@ -48,15 +47,17 @@ const AppointmentModal = ({ name }: { name: string }) => {
     try {
       const dateWithTime = `${new Date(data?.date)?.toLocaleDateString()} ${data?.time}`;
       const date = new Date(dateWithTime);
+      const status = date > new Date() ? "upcoming" : "past";
 
       const appointmentData = {
         title: data.title,
         description: data.description,
         date: date,
         time: data.time,
-        apntWith: name,
-        person: currentUser?.uid,
-        status: true,
+        appointmentWith: name,
+        appointmentFrom: loggedInUser,
+        status: status,
+        isAccepted: false,
       };
 
       const appointmentsRef = collection(db, "appointments");

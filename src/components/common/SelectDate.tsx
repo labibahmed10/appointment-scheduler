@@ -20,7 +20,7 @@ const SelectDate = ({ setDate, date }: ISelectDate) => {
         </Button>
       </PopoverTrigger>
       <PopoverContent className="w-auto p-0" align="start">
-        <Calendar mode="single" selected={date} onSelect={(value) => setDate(value)} disabled={(date) => date < new Date()} />
+        <Calendar mode="single" selected={date} onSelect={(value) => setDate(value)} />
       </PopoverContent>
     </Popover>
   );

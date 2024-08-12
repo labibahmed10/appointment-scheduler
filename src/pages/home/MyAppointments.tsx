@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
 
 const MyAppointments = () => {
-  const { allAppointments } = useAuth();
+  const { allAppointments, loggedInUser } = useAuth();
   const [searchTerm, setSearchTerm] = useState("");
   const [shortAppointments, setShortAppointments] = useState<DocumentData[]>([]);
 
@@ -23,8 +23,14 @@ const MyAppointments = () => {
   };
 
   useEffect(() => {
-    setShortAppointments(allAppointments);
-  }, [allAppointments]);
+    const loggedInUsersAppointments = allAppointments.filter((appointment) => {
+      if (loggedInUser === appointment.appointmentFrom || loggedInUser === appointment.appointmentWith) {
+        return true;
+      }
+    });
+
+    setShortAppointments(loggedInUsersAppointments);
+  }, [allAppointments, loggedInUser]);
 
   const onChange = (filterType: string) => {
     const result = shortAppointments
@@ -42,7 +48,7 @@ const MyAppointments = () => {
           case "all":
             return 1;
           default:
-            return 1;
+            return 0;
         }
       });
     setShortAppointments(result);

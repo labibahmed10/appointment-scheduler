@@ -4,25 +4,29 @@ import { Card, CardContent, CardFooter } from "../ui/card";
 import { format } from "date-fns";
 import { DocumentData, Timestamp } from "firebase/firestore";
 import { Badge } from "../ui/badge";
+import { useAuth } from "@/context/AuthContext";
 
 const AppointmentCard = ({ data }: DocumentData) => {
-  const appointmentDate = data.date instanceof Timestamp ? new Date(data?.date.toDate()) : new Date(data?.date);
-  console.log(appointmentDate);
-  const status = appointmentDate > new Date() ? "secondary" : appointmentDate < new Date() ? "primary" : "destructive";
+  const { loggedInUser } = useAuth();
+  console.log({ loggedInUser, data });
+  const meetingText = loggedInUser === data?.appointmentFrom ? `With ${data?.appointmentWith}` : `From ${data?.appointmentFrom}`;
+  const rescheduleMeeting = loggedInUser === data?.appointmentFrom ? true : false;
 
   return (
     <Card className="w-full">
       <CardContent className="p-4">
         <div className="flex items-center justify-between mb-2">
           <div>
-            <div className="font-bold">Meeting with {data?.apntWith}</div>
+            <div className="font-bold">Meeting {meetingText}</div>
             <div className="flex items-center gap-2">
               <CalendarIcon className="w-4 h-4 text-muted-foreground" />
               <div>{`
               ${data.date instanceof Timestamp ? format(data?.date?.toDate(), "PPP") : format(data?.date, "PPP")} at ${data?.time}`}</div>
             </div>
           </div>
-          <Badge variant={status}>{"Status"}</Badge>
+          <Badge variant="secondary" className={`${data?.status === "upcoming" ? "bg-yellow-500" : "bg-red-400"}`}>
+            {data?.status}
+          </Badge>
         </div>
 
         <div className="py-1">
@@ -37,10 +41,23 @@ const AppointmentCard = ({ data }: DocumentData) => {
           </div> */}
 
           <div className="flex items-center gap-2">
-            <Button variant="outline" size="sm">
+            <Button
+              variant="destructive"
+              size="sm"
+              disabled={data?.isAccepted}
+              className="bg-red-600 disabled:bg-red-400 disabled:cursor-not-allowed"
+            >
               Cancel
             </Button>
-            <Button size="sm">Accept</Button>
+            {rescheduleMeeting ? (
+              <Button size="sm" variant="default" className="bg-sky-600 hover:bg-sky-700">
+                Reschedule
+              </Button>
+            ) : (
+              <Button size="sm" variant="default" className="bg-green-600 hover:bg-green-700">
+                {data.isAccepted ? "Accepted" : "Accept"}
+              </Button>
+            )}
           </div>
         </CardFooter>
       </CardContent>
