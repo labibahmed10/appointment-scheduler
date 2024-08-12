@@ -3,21 +3,34 @@ import SelectDropdown from "@/components/common/SelectDropdown";
 import { Button } from "@/components/ui/button";
 import { timeFrame } from "@/const/constValue";
 import { useAuth } from "@/context/AuthContext";
-import { DocumentData } from "firebase/firestore";
+import { DocumentData, Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
+import { Input } from "@/components/ui/input";
 
 const MyAppointments = () => {
   const { allAppointments } = useAuth();
+  const [searchTerm, setSearchTerm] = useState("");
   const [shortAppointments, setShortAppointments] = useState<DocumentData[]>([]);
+
+  const handleSubmit = () => {
+    const filteredAppointments = allAppointments.filter((user) => {
+      if (searchTerm) {
+        return user?.title?.toLowerCase().includes(searchTerm?.toLowerCase());
+      }
+      return user;
+    });
+    setShortAppointments(filteredAppointments);
+  };
 
   useEffect(() => {
     setShortAppointments(allAppointments);
   }, [allAppointments]);
 
   const onChange = (filterType: string) => {
-    const result = allAppointments
+    const result = shortAppointments
       .map((appointments) => {
-        const appointmentDate = new Date(appointments?.date.toDate());
+        const appointmentDate = appointments.date instanceof Timestamp ? new Date(appointments?.date.toDate()) : new Date(appointments?.date);
+
         return { ...appointments, date: appointmentDate };
       })
       .sort((a, b) => {
@@ -27,11 +40,11 @@ const MyAppointments = () => {
           case "past":
             return a.date.getTime() - b.date.getTime();
           case "all":
+            return 1;
           default:
             return 1;
         }
       });
-
     setShortAppointments(result);
   };
 
@@ -39,10 +52,19 @@ const MyAppointments = () => {
     <div>
       <h2 className="text-2xl font-bold mt-12 mb-6">My Appointments</h2>
       <div className="bg-card p-6 rounded-md shadow-md">
-        <div className="flex items-center gap-4 mb-4">
-          <SelectDropdown placeholder="Filter by status" items={timeFrame} onChange={onChange} />
-          <Button>Filter</Button>
+        <div className="flex items-center justify-between gap-4 mb-4">
+          <div className="flex w-full max-w-sm gap-2">
+            <SelectDropdown placeholder="Filter by status" items={timeFrame} onChange={onChange} />
+            <Button>Filter</Button>
+          </div>
+          <div className="flex w-full max-w-sm items-center space-x-2">
+            <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} type="text" placeholder="Search your appointment title..." />
+            <Button type="submit" onClick={handleSubmit}>
+              Search
+            </Button>
+          </div>
         </div>
+
         <div className="grid sm:grid-cols-2 gap-4">
           {shortAppointments.map((data) => (
             <AppointmentCard key={data.id} data={data} />
