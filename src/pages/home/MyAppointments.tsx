@@ -6,6 +6,7 @@ import { useAuth } from "@/context/AuthContext";
 import { DocumentData, Timestamp } from "firebase/firestore";
 import { useEffect, useState } from "react";
 import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 const MyAppointments = () => {
   const { allAppointments, loggedInUser } = useAuth();
@@ -59,9 +60,9 @@ const MyAppointments = () => {
       <h2 className="text-2xl font-bold mt-12 mb-6">My Appointments</h2>
       <div className="bg-card p-6 rounded-md shadow-md">
         <div className="flex items-center justify-between gap-4 mb-4">
-          <div className="flex w-full max-w-sm gap-2">
+          <div className="flex items-center justify-between">
+            <Label className="w-56">Filter by status</Label>
             <SelectDropdown placeholder="Filter by status" items={timeFrame} onChange={onChange} />
-            <Button>Filter</Button>
           </div>
           <div className="flex w-full max-w-sm items-center space-x-2">
             <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} type="text" placeholder="Search your appointment title..." />

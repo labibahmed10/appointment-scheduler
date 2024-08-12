@@ -1,16 +1,21 @@
 import UsersCard from "@/components/card/UsersCard";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { DocumentData } from "firebase/firestore";
 
 const AllUsers = () => {
   const [searchQuery, setSearchQuery] = useState<string | undefined>("");
   const searchUserRef = useRef<HTMLInputElement>(null);
   const timeOutRef = useRef<NodeJS.Timeout | null>(null);
-
   const { allUsers, currentUser } = useAuth();
-  const showUsers = allUsers.filter((doc) => doc.id !== currentUser?.uid);
+  const [filteredUsers, setFilteredUsers] = useState<DocumentData[] | undefined>([]);
+
+  useEffect(() => {
+    const showUsers = allUsers.filter((doc) => doc.id !== currentUser?.uid);
+    setFilteredUsers(showUsers);
+  }, [allUsers, currentUser?.uid]);
 
   const handleSearchUser = () => {
     const searchedUser = searchUserRef.current?.value.trim().toLowerCase();
@@ -22,7 +27,10 @@ const AllUsers = () => {
     }, 300);
   };
 
-  const filteredUsers = showUsers.filter((user) => user.name.toLowerCase().includes(searchQuery));
+  const showFilteredUser = () => {
+    const filteredUsers = allUsers.filter((doc) => doc.id !== currentUser?.uid).filter((user) => user.name.toLowerCase().includes(searchQuery));
+    setFilteredUsers(filteredUsers);
+  };
 
   return (
     <div>
@@ -30,7 +38,7 @@ const AllUsers = () => {
       <div className="bg-card p-6 rounded-md shadow-md">
         <div className="flex items-center gap-4 mb-4">
           <Input ref={searchUserRef} onChange={handleSearchUser} placeholder="Search users..." className="flex-1" />
-          <Button>Search</Button>
+          <Button onClick={showFilteredUser}>Search</Button>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
           {filteredUsers?.map((doc) => (

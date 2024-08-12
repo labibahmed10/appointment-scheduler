@@ -1,4 +1,4 @@
-import { doc, deleteDoc } from "firebase/firestore";
+import { doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter } from "../ui/card";
@@ -15,6 +15,13 @@ const AppointmentCard = ({ data }: DocumentData) => {
 
   const cancelAMeeeting = async (id: string) => {
     await deleteDoc(doc(db, "appointments", id));
+  };
+
+  const acceptAMeeeting = async (id: string) => {
+    const appointmentRef = doc(db, "appointments", id);
+    await updateDoc(appointmentRef, {
+      isAccepted: true,
+    });
   };
 
   return (
@@ -46,21 +53,21 @@ const AppointmentCard = ({ data }: DocumentData) => {
           </div> */}
 
           <div className="flex items-center gap-2">
-            <Button
-              variant="destructive"
-              size="sm"
-              disabled={data?.isAccepted}
-              className="bg-red-600 disabled:bg-red-400 disabled:cursor-not-allowed"
-              onClick={() => cancelAMeeeting(data?.id)}
-            >
-              Cancel
+            <Button variant="destructive" size="sm" className="bg-red-600 " onClick={() => cancelAMeeeting(data?.id)}>
+              Decline
             </Button>
             {rescheduleMeeting ? (
-              <Button size="sm" variant="default" className="bg-sky-600 hover:bg-sky-700">
+              <Button size="sm" variant="default" className="bg-sky-600 hover:bg-sky-700" disabled={data?.isAccepted}>
                 Reschedule
               </Button>
             ) : (
-              <Button size="sm" variant="default" className="bg-green-600 hover:bg-green-700">
+              <Button
+                disabled={data?.isAccepted}
+                size="sm"
+                variant="default"
+                className="bg-green-600 hover:bg-green-700"
+                onClick={() => acceptAMeeeting(data?.id)}
+              >
                 {data.isAccepted ? "Accepted" : "Accept"}
               </Button>
             )}
