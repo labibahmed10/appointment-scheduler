@@ -1,3 +1,4 @@
+import { doc, deleteDoc } from "firebase/firestore";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter } from "../ui/card";
@@ -5,12 +6,16 @@ import { format } from "date-fns";
 import { DocumentData, Timestamp } from "firebase/firestore";
 import { Badge } from "../ui/badge";
 import { useAuth } from "@/context/AuthContext";
+import { db } from "@/firebase/firebase";
 
 const AppointmentCard = ({ data }: DocumentData) => {
   const { loggedInUser } = useAuth();
-  console.log({ loggedInUser, data });
   const meetingText = loggedInUser === data?.appointmentFrom ? `With ${data?.appointmentWith}` : `From ${data?.appointmentFrom}`;
   const rescheduleMeeting = loggedInUser === data?.appointmentFrom ? true : false;
+
+  const cancelAMeeeting = async (id: string) => {
+    await deleteDoc(doc(db, "appointments", id));
+  };
 
   return (
     <Card className="w-full">
@@ -46,6 +51,7 @@ const AppointmentCard = ({ data }: DocumentData) => {
               size="sm"
               disabled={data?.isAccepted}
               className="bg-red-600 disabled:bg-red-400 disabled:cursor-not-allowed"
+              onClick={() => cancelAMeeeting(data?.id)}
             >
               Cancel
             </Button>
