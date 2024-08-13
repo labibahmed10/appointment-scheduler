@@ -17,7 +17,7 @@ const AppointmentModal = ({ name }: { name: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [appointmentTime, setAppointmentTime] = useState(selectTimes);
   const { isError, isSuccess, isPending, error, mutate, reset: mutationStateReset } = appointmentMutation;
-  const { register, handleSubmit, setValue, watch, reset,  formState: { errors } } = useForm();
+  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm();
 
   useEffect(() => {
     const dateValue = watch("date");
@@ -41,23 +41,14 @@ const AppointmentModal = ({ name }: { name: string }) => {
       setIsOpen(false);
       reset();
       mutationStateReset();
-
-      toast.success("Appointment was created successfully", {
-        duration: 2000,
-        position: "top-center",
-        richColors: true,
-      });
+      toast.success("Appointment was created successfully");
     }
 
     if (isError) {
       setIsOpen(false);
       reset();
       mutationStateReset();
-
       toast.error("Failed to create an appointment", {
-        duration: 2000,
-        position: "top-center",
-        richColors: true,
         description: error ? error?.message : "",
       });
     }

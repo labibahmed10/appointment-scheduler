@@ -2,7 +2,7 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, User, UserCredential } from "firebase/auth";
 import { auth, db } from "@/firebase/firebase";
-import { addDoc, collection, DocumentData, DocumentReference, getDocs, query } from "firebase/firestore";
+import { addDoc, collection, deleteDoc, doc, DocumentData, getDocs, query, updateDoc } from "firebase/firestore";
 import { useMutation, UseMutationResult, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface IAuthContext {
@@ -13,7 +13,9 @@ interface IAuthContext {
   allUsers: DocumentData[];
   allAppointments: DocumentData[];
   loggedInUser: string | undefined;
-  appointmentMutation: UseMutationResult<DocumentReference<any, DocumentData>, Error, any, unknown>;
+  appointmentMutation: UseMutationResult<void, Error, any, unknown>;
+  cancelAppointmentMutation: UseMutationResult<void, Error, any, unknown>;
+  acceptAppointmentMutation: UseMutationResult<void, Error, any, unknown>;
 }
 
 const AuthContext = createContext<any>(null);
@@ -47,13 +49,9 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const querySnap = await getDocs(queries);
     return querySnap?.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
   };
-  const { data: allAppointments } = useQuery({
-    queryKey: ["appointments"],
-    queryFn: queryOfAppointments,
-  });
+  const { data: allAppointments } = useQuery({ queryKey: ["appointments"], queryFn: queryOfAppointments });
 
   // creating new appointment
-
   const createNewAppointment = async (appointmentData: any) => {
     const appointmentsRef = collection(db, "appointments");
     await addDoc(appointmentsRef, appointmentData);
@@ -62,6 +60,34 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const appointmentMutation = useMutation({
     mutationKey: ["appointments"],
     mutationFn: createNewAppointment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+    },
+  });
+
+  // decline / cancel appointment
+  const cancelAMeeeting = async (id: string) => {
+    return await deleteDoc(doc(db, "appointments", id));
+  };
+
+  const cancelAppointmentMutation = useMutation({
+    mutationKey: ["appointments"],
+    mutationFn: cancelAMeeeting,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+    },
+  });
+
+  const acceptAMeeeting = async (id: string) => {
+    const appointmentRef = doc(db, "appointments", id);
+    return await updateDoc(appointmentRef, {
+      isAccepted: true,
+    });
+  };
+
+  const acceptAppointmentMutation = useMutation({
+    mutationKey: ["appointments"],
+    mutationFn: acceptAMeeeting,
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["appointments"] });
     },
@@ -105,6 +131,8 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     allAppointments: allAppointments as DocumentData[],
     appointmentMutation,
     loggedInUser,
+    cancelAppointmentMutation,
+    acceptAppointmentMutation,
   };
 
   return <AuthContext.Provider value={value}>{!loading && children}</AuthContext.Provider>;
