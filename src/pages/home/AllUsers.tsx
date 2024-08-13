@@ -45,18 +45,20 @@ const AllUsers = () => {
   } else {
     showUsers = (
       <div>
-        <p className="text-2xl font-semibold font-mono text-indigo-800">Create a user to schedule an appointment</p>
+        <p className="text-base sm:text-2xl font-semibold font-mono text-indigo-800">Create a user to schedule an appointment</p>
       </div>
     );
   }
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mb-6">Find Users</h2>
-      <div className="bg-card p-6 rounded-md shadow-md">
-        <div className="flex items-center gap-4 mb-4">
-          <Input ref={searchUserRef} onChange={handleSearchUser} placeholder="Search users..." className="flex-1" />
-          <Button onClick={showFilteredUser}>Search</Button>
+      <h2 className="text-2xl font-bold mb-2 sm:mb-6">Find Users</h2>
+      <div className="bg-card p-3 sm:p-6 rounded-md shadow-md">
+        <div className="flex items-center gap-2 mb-4">
+          <Input ref={searchUserRef} onChange={handleSearchUser} placeholder="Search users..." className="flex-1 h-7 sm:h-9 text-xs sm:text-sm" />
+          <Button onClick={showFilteredUser} className="h-7 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm">
+            Search
+          </Button>
         </div>
 
         {/* all users are rendered here */}

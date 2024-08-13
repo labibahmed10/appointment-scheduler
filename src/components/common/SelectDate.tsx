@@ -14,7 +14,7 @@ const SelectDate = ({ setDate, date }: ISelectDate) => {
   return (
     <Popover>
       <PopoverTrigger asChild>
-        <Button variant="outline" className="w-full justify-start text-left font-normal">
+        <Button variant="outline" className="w-full justify-start text-left font-normal h-7 sm:h-9 text-xs sm:text-sm">
           <CalendarDaysIcon className="mr-1 h-4 w-4 -translate-x-1" />
           {date ? format(date, "dd/MM/yyyy") : <span>Select date</span>}
         </Button>

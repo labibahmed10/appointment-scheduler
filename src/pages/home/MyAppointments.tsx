@@ -53,7 +53,7 @@ const MyAppointments = () => {
 
   if (shortAppointments?.length > 0) {
     showAllAppointments = (
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">
         {shortAppointments.map((data) => (
           <AppointmentCard key={data.id} data={data} />
         ))}
@@ -62,27 +62,33 @@ const MyAppointments = () => {
   } else {
     showAllAppointments = (
       <div>
-        <p className="text-2xl font-semibold font-mono text-indigo-800">No Appointments are Available</p>
+        <p className="text-base sm:text-2xl font-semibold font-mono text-indigo-800">No Appointments are Available</p>
       </div>
     );
   }
 
   return (
     <div>
-      <h2 className="text-2xl font-bold mt-12 mb-6 ">My Appointments</h2>
+      <h2 className="text-2xl font-bold mt-12 mb-4 sm:mb-6">My Appointments</h2>
 
-      <div className="bg-card p-6 rounded-md shadow-md">
+      <div className="bg-card p-3 sm:p-6 rounded-md shadow-md">
         <div className="flex items-start sm:items-center justify-between sm:flex-row flex-col gap-3 mb-4">
           {/* filter by status */}
           <div className="flex items-center justify-between gap-1">
-            <Label className="w-full sm:w-40">Filter by status</Label>
+            <Label className="w-full sm:w-40 text-xs sm:text-sm">Filter by status</Label>
             <SelectDropdown placeholder="Filter by status" items={timeFrame} onChange={onChange} />
           </div>
 
           {/* search by title */}
           <div className="flex w-full max-w-sm items-center space-x-2">
-            <Input value={searchTerm} onChange={(e) => setSearchTerm(e.target.value)} type="text" placeholder="Search your appointment title..." />
-            <Button type="submit" onClick={handleSubmit}>
+            <Input
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              type="text"
+              placeholder="Search your appointment title..."
+              className="h-7 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm"
+            />
+            <Button type="submit" onClick={handleSubmit} className="h-7 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm">
               Search
             </Button>
           </div>

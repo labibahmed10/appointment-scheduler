@@ -1,5 +1,4 @@
 import { CalendarIcon, LogOut } from "lucide-react";
-import { Link } from "react-router-dom";
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -16,12 +15,12 @@ const Navbar = () => {
   const { loggedInUser, logout } = useAuth();
 
   return (
-    <header className="sticky top-0 z-30 flex h-16 w-full items-center border-b bg-background px-4 sm:px-6">
+    <header className="sticky top-0 flex h-16 w-full items-center bg-slate-300 z-[100] border-b px-4 sm:px-6">
       <div className="flex flex-1 items-center gap-4">
-        <Link to="#" className="flex items-center gap-2 font-bold">
+        <div className="flex items-center gap-2 font-bold">
           <CalendarIcon className="h-6 w-6" />
           <span>Appointment Scheduler</span>
-        </Link>
+        </div>
       </div>
       <div className="flex items-center gap-4">
         <DropdownMenu>

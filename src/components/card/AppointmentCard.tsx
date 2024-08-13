@@ -16,28 +16,29 @@ const AppointmentCard = ({ data }: DocumentData) => {
   return (
     <Card className="h-fit">
       <CardContent className="px-4 pt-4 pb-0">
-        <div className="flex items-center justify-between mb-2">
+        <div className="flex gap-2 sm:gap-0 flex-col sm:flex-row items-start sm:items-center sm:justify-between mb-0 sm:mb-2">
           <div>
-            <div className="font-bold">Meeting {meetingText}</div>
-            <div className="flex items-center gap-2">
+            <p className="font-bold ">Meeting {meetingText}</p>
+            <div className="flex items-center gap-2 text-sm sm:text-base">
               <CalendarIcon className="w-4 h-4 text-muted-foreground" />
               <div>{`
               ${data.date instanceof Timestamp ? format(data?.date?.toDate(), "PPP") : format(data?.date, "PPP")} at ${data?.time}`}</div>
             </div>
           </div>
-          <Badge variant="secondary" className={`${data?.status === "upcoming" ? "bg-yellow-500" : "bg-red-400"}`}>
+
+          <Badge variant="secondary" className={`self-end ${data?.status === "upcoming" ? "bg-yellow-500" : "bg-red-400"}`}>
             {data?.status}
           </Badge>
         </div>
 
         <div className="py-1">
-          <p className="text-xl font-semibold">{data?.title}</p>
-          <p className="text-md text-muted-foreground break-words">{data?.description}</p>
+          <p className="text-md sm:text-xl font-semibold">{data?.title}</p>
+          <p className="text-sm sm:text-base text-muted-foreground break-words">{data?.description}</p>
         </div>
       </CardContent>
       <CardFooter className="flex justify-end gap-2 px-4 pb-4">
         <div className="flex items-center gap-2">
-          <Button variant="destructive" size="sm" className="bg-red-600 " onClick={() => mutate(data?.id)}>
+          <Button variant="destructive" size="sm" className="bg-red-600 h-7 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm" onClick={() => mutate(data?.id)}>
             {data?.id === variables && isPending && (
               <svg className="animate-spin h-5 w-5 mr-2 border-white border-2 rounded-full" viewBox="0 0 48 48"></svg>
             )}
@@ -48,7 +49,7 @@ const AppointmentCard = ({ data }: DocumentData) => {
               disabled={data?.isAccepted}
               size="sm"
               variant="default"
-              className="bg-green-600 hover:bg-green-700"
+              className="bg-green-600 hover:bg-green-700 h-7 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm"
               onClick={() => acceptMutate(data?.id)}
             >
               {data?.id === acceptVariables && isAcceptPending && (

@@ -17,7 +17,14 @@ const AppointmentModal = ({ name }: { name: string }) => {
   const [isOpen, setIsOpen] = useState(false);
   const [appointmentTime, setAppointmentTime] = useState(selectTimes);
   const { isError, isSuccess, isPending, error, mutate, reset: mutationStateReset } = appointmentMutation;
-  const { register, handleSubmit, setValue, watch, reset, formState: { errors } } = useForm();
+  const {
+    register,
+    handleSubmit,
+    setValue,
+    watch,
+    reset,
+    formState: { errors },
+  } = useForm();
 
   useEffect(() => {
     const dateValue = watch("date");
@@ -80,20 +87,22 @@ const AppointmentModal = ({ name }: { name: string }) => {
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
-        <Button className="w-full">Schedule Appointment</Button>
+        <Button className="w-full h-8 sm:h-9 text-xs sm:text-sm">Schedule Appointment</Button>
       </DialogTrigger>
-      <DialogContent className="sm:max-w-[425px]">
+      <DialogContent className="sm:max-w-[425px] max-w-[300px] rounded-lg">
         <DialogHeader>
           <DialogTitle className="text-center">Create Appointment</DialogTitle>
-          <DialogDescription className="text-center">Create an appointment with the user</DialogDescription>
+          <DialogDescription className="text-center text-xs sm:text-base">Create an appointment with the user</DialogDescription>
         </DialogHeader>
 
         <form onSubmit={handleSubmit(onSubmit)}>
-          <div className="grid gap-4">
-            <div className="grid grid-cols-2 gap-4">
+          <div className="grid gap-2 sm:gap-4">
+            <div className="grid sm:grid-cols-2 grid-cols-1 gap-4">
               {/* date of appointment */}
               <div className="space-y-2">
-                <Label htmlFor="date">Start Date</Label>
+                <Label htmlFor="date" className="text-xs sm:text-sm">
+                  Start Date
+                </Label>
                 <SelectDate
                   setDate={(value) => setValue("date", value)}
                   date={watch("date")}
@@ -104,7 +113,9 @@ const AppointmentModal = ({ name }: { name: string }) => {
 
               {/* time of appointment */}
               <div className="space-y-2">
-                <Label htmlFor="time">Start Time</Label>
+                <Label htmlFor="time" className="text-xs sm:text-sm">
+                  Start Time
+                </Label>
                 <SelectDropdown
                   register={undefined}
                   placeholder="Select time"
@@ -119,14 +130,23 @@ const AppointmentModal = ({ name }: { name: string }) => {
 
             {/* title of appointment */}
             <div className="space-y-2">
-              <Label htmlFor="title">Title</Label>
-              <Input id="title" placeholder="Appointment title" {...register("title", { required: "Title is required" })} />
+              <Label htmlFor="title" className="text-xs sm:text-sm">
+                Title
+              </Label>
+              <Input
+                id="title"
+                placeholder="Appointment title"
+                {...register("title", { required: "Title is required" })}
+                className="h-7 sm:h-9 px-2 sm:px-3 text-xs sm:text-sm"
+              />
               {errors.title && <span className="text-red-500">{errors.title.message as string}</span>}
             </div>
 
             {/* description of appointment */}
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description" className="text-xs sm:text-sm">
+                Description
+              </Label>
               <Textarea
                 id="description"
                 placeholder="Appointment description"
@@ -137,7 +157,7 @@ const AppointmentModal = ({ name }: { name: string }) => {
 
             {/* close btn */}
             <DialogFooter>
-              <Button type="submit" className="w-full bg-indigo-700 hover:bg-indigo-800">
+              <Button type="submit" className="w-full bg-indigo-700 hover:bg-indigo-800 text-xs sm:text-sm h-8 sm:h-9">
                 {isPending && <svg className="animate-spin h-5 w-5 mr-2 border-white border-2 rounded-full" viewBox="0 0 48 48"></svg>}
                 Create Appointment
               </Button>

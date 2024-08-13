@@ -9,7 +9,7 @@ const UsersCard = ({ user }: { user: DocumentData }) => {
   return (
     <>
       <Card>
-        <CardContent className="p-4">
+        <CardContent className="p-3 sm:p-4">
           <div className="flex items-center gap-4 mb-4">
             <Avatar>
               <AvatarImage src="/placeholder-user.jpg" alt="User Avatar" />

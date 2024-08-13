@@ -40,25 +40,29 @@ const Login = () => {
 
   return (
     <Card>
-      <CardHeader>
-        <CardTitle className="text-2xl">Login</CardTitle>
+      <CardHeader className="py-3 sm:py-6">
+        <CardTitle className="text-xl sm:text-2xl">Login</CardTitle>
       </CardHeader>
 
       <form action="" onSubmit={handleSubmit}>
         <CardContent className="space-y-3 py-3">
           <div className="space-y-2">
-            <Label htmlFor="username">Username</Label>
-            <Input ref={userNameRef} id="username" type="text" placeholder="Enter your username" required />
+            <Label htmlFor="username" className="text-xs sm:text-sm">
+              Username
+            </Label>
+            <Input ref={userNameRef} id="username" type="text" placeholder="Enter your username" required className="h-8 sm:h-10" />
           </div>
           <div className="space-y-2">
-            <Label htmlFor="password">Password</Label>
-            <Input ref={passwordRef} id="password" type="password" placeholder="Enter your password" required />
+            <Label htmlFor="password" className="text-xs sm:text-sm">
+              Password
+            </Label>
+            <Input ref={passwordRef} id="password" type="password" placeholder="Enter your password" required className="h-8 sm:h-10" />
           </div>
         </CardContent>
 
         {error && <p className="text-red-600 text-center py-1">{error}</p>}
-        <CardFooter>
-          <Button className="w-full" type="submit">
+        <CardFooter className="py-3 sm:py-6">
+          <Button type="submit" className="h-8 sm:h-10 w-full">
             Login
           </Button>
         </CardFooter>
