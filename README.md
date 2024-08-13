@@ -41,6 +41,7 @@ To run the project locally:
 - Firebase
 - Shadcn
 - Tailwind CSS
+- Tanstack Query
 - React-hook-form
 - React-router-dom
 - Sonner
