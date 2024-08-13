@@ -7,24 +7,17 @@ import { Textarea } from "@/components/ui/textarea";
 import SelectDate from "../common/SelectDate";
 import { selectTimes } from "@/const/constValue";
 import { useForm } from "react-hook-form";
-import { addDoc, collection } from "firebase/firestore";
-import { db } from "@/firebase/firebase";
 import SelectDropdown from "../common/SelectDropdown";
 import { useEffect, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { toast } from "sonner";
 
 const AppointmentModal = ({ name }: { name: string }) => {
-  const { loggedInUser, allAppointments, allUsers } = useAuth();
+  const { loggedInUser, allAppointments, allUsers, appointmentMutation } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [appointmentTime, setAppointmentTime] = useState(selectTimes);
-
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    watch,
-    formState: { errors },
-  } = useForm();
+  const { isError, isSuccess, isPending, error, mutate, reset: mutationStateReset } = appointmentMutation;
+  const { register, handleSubmit, setValue, watch, reset,  formState: { errors } } = useForm();
 
   useEffect(() => {
     const dateValue = watch("date");
@@ -43,6 +36,33 @@ const AppointmentModal = ({ name }: { name: string }) => {
     setAppointmentTime(availableTimes); // Update the state with available times
   }, [allAppointments, allUsers, name, watch("date")]);
 
+  useEffect(() => {
+    if (isSuccess) {
+      setIsOpen(false);
+      reset();
+      mutationStateReset();
+
+      toast.success("Appointment was created successfully", {
+        duration: 2000,
+        position: "top-center",
+        richColors: true,
+      });
+    }
+
+    if (isError) {
+      setIsOpen(false);
+      reset();
+      mutationStateReset();
+
+      toast.error("Failed to create an appointment", {
+        duration: 2000,
+        position: "top-center",
+        richColors: true,
+        description: error ? error?.message : "",
+      });
+    }
+  }, [error, isError, isSuccess, mutationStateReset, reset]);
+
   const onSubmit = async (data: any) => {
     try {
       const dateWithTime = `${new Date(data?.date)?.toLocaleDateString()} ${data?.time}`;
@@ -60,16 +80,12 @@ const AppointmentModal = ({ name }: { name: string }) => {
         isAccepted: false,
       };
 
-      const appointmentsRef = collection(db, "appointments");
-      const docRef = await addDoc(appointmentsRef, appointmentData);
-
-      if (docRef.id) {
-        setIsOpen(false);
-      }
+      mutate(appointmentData);
     } catch (error) {
       console.error(error);
     }
   };
+
   return (
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
@@ -130,7 +146,8 @@ const AppointmentModal = ({ name }: { name: string }) => {
 
             {/* close btn */}
             <DialogFooter>
-              <Button type="submit" className="w-full">
+              <Button type="submit" className="w-full bg-indigo-700 hover:bg-indigo-800">
+                {isPending && <svg className="animate-spin h-5 w-5 mr-2 border-white border-2 rounded-full" viewBox="0 0 48 48"></svg>}
                 Create Appointment
               </Button>
             </DialogFooter>

@@ -2,8 +2,8 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from "react";
 import { onAuthStateChanged, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut, User, UserCredential } from "firebase/auth";
 import { auth, db } from "@/firebase/firebase";
-import { addDoc, collection, DocumentData, getDocs, query } from "firebase/firestore";
-import { useQuery } from "@tanstack/react-query";
+import { addDoc, collection, DocumentData, DocumentReference, getDocs, query } from "firebase/firestore";
+import { useMutation, UseMutationResult, useQuery, useQueryClient } from "@tanstack/react-query";
 
 interface IAuthContext {
   currentUser: User | null;
@@ -13,6 +13,7 @@ interface IAuthContext {
   allUsers: DocumentData[];
   allAppointments: DocumentData[];
   loggedInUser: string | undefined;
+  appointmentMutation: UseMutationResult<DocumentReference<any, DocumentData>, Error, any, unknown>;
 }
 
 const AuthContext = createContext<any>(null);
@@ -20,6 +21,7 @@ const AuthContext = createContext<any>(null);
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [currentUser, setCurrentUser] = useState<User | null>(null);
   const [loading, setLoading] = useState(true);
+  const queryClient = useQueryClient();
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, (user) => {
@@ -45,7 +47,25 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     const querySnap = await getDocs(queries);
     return querySnap?.docs.map((doc) => ({ ...doc.data(), id: doc.id }));
   };
-  const { data: allAppointments } = useQuery({ queryKey: ["appointments"], queryFn: queryOfAppointments });
+  const { data: allAppointments } = useQuery({
+    queryKey: ["appointments"],
+    queryFn: queryOfAppointments,
+  });
+
+  // creating new appointment
+
+  const createNewAppointment = async (appointmentData: any) => {
+    const appointmentsRef = collection(db, "appointments");
+    await addDoc(appointmentsRef, appointmentData);
+  };
+
+  const appointmentMutation = useMutation({
+    mutationKey: ["appointments"],
+    mutationFn: createNewAppointment,
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["appointments"] });
+    },
+  });
 
   //  sign up or register
   const register = async (userName: string, password: string): Promise<string | undefined> => {
@@ -83,6 +103,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     logout,
     allUsers: allUsers as DocumentData[],
     allAppointments: allAppointments as DocumentData[],
+    appointmentMutation,
     loggedInUser,
   };
 

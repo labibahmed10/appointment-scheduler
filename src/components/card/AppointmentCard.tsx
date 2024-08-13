@@ -7,14 +7,17 @@ import { DocumentData, Timestamp } from "firebase/firestore";
 import { Badge } from "../ui/badge";
 import { useAuth } from "@/context/AuthContext";
 import { db } from "@/firebase/firebase";
+import { useQueryClient } from "@tanstack/react-query";
 
 const AppointmentCard = ({ data }: DocumentData) => {
   const { loggedInUser } = useAuth();
+  const queryClient = useQueryClient();
   const meetingText = loggedInUser === data?.appointmentFrom ? `With ${data?.appointmentWith}` : `From ${data?.appointmentFrom}`;
   const rescheduleMeeting = loggedInUser === data?.appointmentFrom ? true : false;
 
   const cancelAMeeeting = async (id: string) => {
     await deleteDoc(doc(db, "appointments", id));
+    queryClient.invalidateQueries({ queryKey: ["appointments"] });
   };
 
   const acceptAMeeeting = async (id: string) => {
