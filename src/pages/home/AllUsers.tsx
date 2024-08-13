@@ -45,7 +45,7 @@ const AllUsers = () => {
   } else {
     showUsers = (
       <div>
-        <p className="text-2xl font-semibold font-mono text-indigo-800">No Users are Available</p>
+        <p className="text-2xl font-semibold font-mono text-indigo-800">Create a user to schedule an appointment</p>
       </div>
     );
   }

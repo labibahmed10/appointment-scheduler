@@ -21,7 +21,7 @@ const UsersCard = ({ user }: { user: DocumentData }) => {
             </div>
           </div>
 
-          <AppointmentModal name={user.name} />
+          <AppointmentModal name={user?.name} />
         </CardContent>
       </Card>
     </>

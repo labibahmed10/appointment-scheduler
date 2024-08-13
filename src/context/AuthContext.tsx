@@ -95,18 +95,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   //  sign up or register
   const register = async (userName: string, password: string): Promise<string | undefined> => {
-    try {
-      const userCredential = await createUserWithEmailAndPassword(auth, userName + "@email.com", password);
+    const userCredential = await createUserWithEmailAndPassword(auth, userName + "@email.com", password);
+    const userDoc = await addDoc(collection(db, "users"), {
+      id: userCredential.user.uid,
+      name: userName,
+    });
 
-      const userDoc = await addDoc(collection(db, "users"), {
-        id: userCredential.user.uid,
-        name: userName,
-      });
-
-      return userDoc.id;
-    } catch (error) {
-      console.log(error);
-    }
+    return userDoc.id;
   };
 
   //  login

@@ -1,4 +1,3 @@
-import { doc, updateDoc } from "firebase/firestore";
 import { CalendarIcon } from "lucide-react";
 import { Button } from "../ui/button";
 import { Card, CardContent, CardFooter } from "../ui/card";

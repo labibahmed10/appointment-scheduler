@@ -5,6 +5,8 @@ import { Button } from "@/components/ui/button";
 import { FormEvent, useRef, useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useNavigate } from "react-router-dom";
+import { useQueryClient } from "@tanstack/react-query";
+import { toast } from "sonner";
 
 const Login = () => {
   const userNameRef = useRef<HTMLInputElement>(null);
@@ -12,6 +14,7 @@ const Login = () => {
   const [error, setError] = useState("");
   const { login } = useAuth();
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -20,11 +23,17 @@ const Login = () => {
       const password = passwordRef.current.value;
       try {
         setError("");
-        await login(userName, password);
+        const result = await login(userName, password);
         navigate("/");
-      } catch (err) {
-        console.log(err);
-        setError("Failed to log in");
+
+        if (result) {
+          navigate("/");
+          toast.success("User Login successful");
+          queryClient.invalidateQueries({ queryKey: ["users"] });
+        }
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+      } catch (err: any) {
+        setError(err.message.split(":")[1]);
       }
     }
   };
@@ -36,7 +45,7 @@ const Login = () => {
       </CardHeader>
 
       <form action="" onSubmit={handleSubmit}>
-        <CardContent className="space-y-4">
+        <CardContent className="space-y-3 py-3">
           <div className="space-y-2">
             <Label htmlFor="username">Username</Label>
             <Input ref={userNameRef} id="username" type="text" placeholder="Enter your username" required />
@@ -47,7 +56,7 @@ const Login = () => {
           </div>
         </CardContent>
 
-        {error && <p className="text-red-600">{error}</p>}
+        {error && <p className="text-red-600 text-center py-1">{error}</p>}
         <CardFooter>
           <Button className="w-full" type="submit">
             Login
